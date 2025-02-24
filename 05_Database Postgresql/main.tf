@@ -13,7 +13,7 @@ terraform {
 provider "azurerm" {
   features {
     resource_group {
-      prevent_deletion_if_contains_resources = false # Desabilitar a verificação se exste algum recurso dentro o grupo de recursos
+      prevent_deletion_if_contains_resources = false # Desabilitar a verificação se existe algum recurso dentro o grupo de recursos
     }
   }
 }
@@ -43,14 +43,23 @@ resource "azurerm_postgresql_server" "server" {
   administrator_login          = "psqladmin"
   administrator_login_password = "G5#r8K@t2Q!x"
 
-  version                 = "9.5"
+  version                 = "11"
   ssl_enforcement_enabled = true
 }
 
 resource "azurerm_postgresql_database" "database" {
-  name                = "terraformdb"
+  name                = "terraformdb"  // nome do banco de dados
   resource_group_name = azurerm_resource_group.rg-tf.name
   server_name         = azurerm_postgresql_server.server.name
   charset             = "UTF8"
   collation           = "English_United States.1252"
+}
+
+# Regra de firewall para permitir o acesso de qualquer IP 
+resource "azurerm_postgresql_firewall_rule" "allow_public_ip" {
+  name                = "allow-public-ip"
+  server_name         = azurerm_postgresql_server.server.name
+  resource_group_name = azurerm_resource_group.rg-tf.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "255.255.255.255"
 }
