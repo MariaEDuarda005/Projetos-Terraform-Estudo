@@ -1,0 +1,30 @@
+### .terraform directory ###
+.terraform/
+
+### Terraform lock file ###
+*.tfstate
+*.tfstate.*
+
+### Terraform execution plans ###
+*.tfplan
+
+### Terraform logs ###
+crash.log
+
+### Sensitive variable files ###
+*.tfvars
+*.tfvars.json
+
+### Backup files created by Terraform ###
+*.backup
+
+### Terraform output files ###
+*.out
+
+### Local configuration files ###
+.terraformrc
+terraform.rc
+.terraform.lock.hcl
+
+# Arquivos grandes (binários do Terraform)
+**/terraform-provider-azurerm_v4.19.0_x5.exe
