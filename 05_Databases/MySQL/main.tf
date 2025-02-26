@@ -1,4 +1,4 @@
-# código de inicialização do terraform
+# Terraform Initialization Block
 terraform {
   required_version = ">=1.10.5"
 
@@ -10,45 +10,63 @@ terraform {
   }
 }
 
+# Azure Provider Configuration
 provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false # Desabilitar a verificação se existe algum recurso dentro o grupo de recursos
-    }
+  features {}
+}
+
+# Local Variables for Configuration
+locals {
+  environment_prefix      = "dev"
+  resource_group_name     = "terraform-project-${local.environment_prefix}"
+  resource_group_location = "East US"
+  tags = {
+    Project      = "terraform-project-${local.environment_prefix}"
+    Owner        = "maria_ferreira"
+    CreationDate = "25/02/2025"
+    Environment  = local.environment_prefix
   }
 }
 
-variable "prefix" {
-  default = "maria-terraform"
+# Module for Resource Group Creation
+module "azurerg" {
+  source = "./modules/azurerg"
+
+  resource_group_name     = local.resource_group_name
+  resource_group_location = local.resource_group_location
+  tags                    = local.tags
 }
 
-# Grupo de recursos
-resource "azurerm_resource_group" "rg-tf" {
-  name     = "${var.prefix}-dev"
-  location = "East US"
+# Module for MySQL Flexible Server
+module "mysql_server" {
+  source = "./modules/mysql_server"
+
+  resource_group_name     = module.azurerg.resource_group_name
+  resource_group_location = module.azurerg.resource_group_location
+  server_name             = "mysql-server-terraform"
+  administrator_login     = "mysqladminun"
+  administrator_password  = "H@Sh1CoR3!"
+  sku_name                = "B_Standard_B1s"
 }
 
-resource "azurerm_mysql_flexible_server" "server" {
-  name                   = "mysql-server-terraform"
-  resource_group_name    = azurerm_resource_group.rg-tf.name
-  location               = azurerm_resource_group.rg-tf.location
-  administrator_login    = "mysqladminun"
-  administrator_password = "H@Sh1CoR3!"
-  sku_name               = "B_Standard_B1s"
-}
+# Module for MySQL Database
+module "mysql_database" {
+  source = "./modules/mysql_database"
 
-resource "azurerm_mysql_flexible_database" "database" {
-  name                = "terraformdb"
-  resource_group_name = azurerm_resource_group.rg-tf.name
-  server_name         = azurerm_mysql_flexible_server.server.name
+  resource_group_name = module.azurerg.resource_group_name
+  server_name         = module.mysql_server.server_name
+  database_name       = "terraformdb"
   charset             = "utf8"
   collation           = "utf8_unicode_ci"
 }
 
-resource "azurerm_mysql_flexible_server_firewall_rule" "allow_public_ip" {
-  name                = "allow-public-ip"
-  server_name         = azurerm_mysql_flexible_server.server.name
-  resource_group_name = azurerm_resource_group.rg-tf.name
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "255.255.255.255"
+# Module for MySQL Firewall Rule
+module "mysql_firewall_rule" {
+  source = "./modules/mysql_firewall_rule"
+
+  allow_public_ip_name = "allow-public-ip" # Passando o nome da regra de firewall
+  resource_group_name  = module.azurerg.resource_group_name
+  server_name          = module.mysql_server.server_name
+  start_ip_address     = "0.0.0.0"
+  end_ip_address       = "255.255.255.255"
 }

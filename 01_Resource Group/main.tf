@@ -14,9 +14,22 @@ provider "azurerm" {
   features {}
 }
 
-# Criar Resource Group para todos os recursos
-# rg-tf -> nome que vai ser usado sempre que for referenciar, mas não é o nome do recurso
-resource "azurerm_resource_group" "rg-tf" {
-  name     = "maria-terraform-dev"
-  location = "East US"
+locals {
+  environment_prefix      = "dev"
+  resource_group_name     = "project-${local.environment_prefix}"
+  resource_group_location = "East US"
+  tags = {
+    Project      = "project-${local.environment_prefix}"
+    Owner        = "maria_ferreira"
+    CreationDate = "25/02/2025"
+    Environment  = local.environment_prefix
+  }
+}
+
+module "azurerg" {
+  source = "./modules/azurerg"
+
+  resource_group_name     = local.resource_group_name
+  resource_group_location = local.resource_group_location
+  tags                    = local.tags
 }
