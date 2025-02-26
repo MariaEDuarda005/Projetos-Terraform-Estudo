@@ -6,3 +6,7 @@ resource "azurerm_mysql_flexible_server" "server" {
   administrator_password = var.administrator_password # "H@Sh1CoR3!"
   sku_name               = var.sku_name # "B_Standard_B1s"
 }
+
+# output "server_name" {
+#   value = azurerm_mysql_flexible_server.server.name
+# }

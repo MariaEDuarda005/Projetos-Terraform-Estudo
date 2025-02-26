@@ -3,14 +3,14 @@ variable "allow_public_ip_name" {
   description = "Name of the firewall rule"
 }
 
-variable "resource_group_name" {
+variable "server_name" {
+  description = "The name of the MySQL server."
   type        = string
-  description = "Name of the resource group"
 }
 
-variable "server_name" {
+variable "resource_group_name" {
+  description = "The name of the resource group."
   type        = string
-  description = "Name of the MySQL server"
 }
 
 variable "start_ip_address" {

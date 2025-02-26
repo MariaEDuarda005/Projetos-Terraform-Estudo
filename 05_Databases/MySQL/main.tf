@@ -1,4 +1,3 @@
-# Terraform Initialization Block
 terraform {
   required_version = ">=1.10.5"
 
@@ -10,12 +9,10 @@ terraform {
   }
 }
 
-# Azure Provider Configuration
 provider "azurerm" {
   features {}
 }
 
-# Local Variables for Configuration
 locals {
   environment_prefix      = "dev"
   resource_group_name     = "terraform-project-${local.environment_prefix}"
@@ -28,7 +25,6 @@ locals {
   }
 }
 
-# Module for Resource Group Creation
 module "azurerg" {
   source = "./modules/azurerg"
 
@@ -37,9 +33,8 @@ module "azurerg" {
   tags                    = local.tags
 }
 
-# Module for MySQL Flexible Server
 module "mysql_server" {
-  source = "./modules/mysql_server"
+  source = "./modules/server"
 
   resource_group_name     = module.azurerg.resource_group_name
   resource_group_location = module.azurerg.resource_group_location
@@ -49,9 +44,8 @@ module "mysql_server" {
   sku_name                = "B_Standard_B1s"
 }
 
-# Module for MySQL Database
 module "mysql_database" {
-  source = "./modules/mysql_database"
+  source = "./modules/database_mysql"
 
   resource_group_name = module.azurerg.resource_group_name
   server_name         = module.mysql_server.server_name
@@ -60,11 +54,10 @@ module "mysql_database" {
   collation           = "utf8_unicode_ci"
 }
 
-# Module for MySQL Firewall Rule
 module "mysql_firewall_rule" {
-  source = "./modules/mysql_firewall_rule"
+  source = "./modules/firewall"
 
-  allow_public_ip_name = "allow-public-ip" # Passando o nome da regra de firewall
+  allow_public_ip_name = "allow-public-ip"
   resource_group_name  = module.azurerg.resource_group_name
   server_name          = module.mysql_server.server_name
   start_ip_address     = "0.0.0.0"

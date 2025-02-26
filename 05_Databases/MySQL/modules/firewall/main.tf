@@ -5,3 +5,7 @@ resource "azurerm_mysql_flexible_server_firewall_rule" "allow_public_ip" {
   start_ip_address    = var.start_ip_address
   end_ip_address      = var.end_ip_address
 }
+
+# output "firewall_rule_name" {
+#   value = azurerm_mysql_flexible_server_firewall_rule.allow_public_ip.name
+# }

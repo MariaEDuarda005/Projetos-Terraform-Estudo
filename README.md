@@ -28,6 +28,17 @@ Aqui estão os comandos Terraform organizados em uma tabela para facilitar o uso
 | `terraform destroy`                 | **Aviso:** Este comando irá remover todos os recursos gerenciados pelo Terraform. |
 
 
+## Módulos
+
+A ideia é dividir tudo em módulos, onde cada módulo será responsável por uma parte da infraestrutura. Dentro de cada módulo, você terá 3 arquivos principais.
+
+- **Módulos**: São usados para organizar sua infraestrutura em blocos reutilizáveis e independentes, como `azurerg`, `server`, `database` e `firewall`.
+- **Arquivos dentro de cada módulo**:
+    - **`main.tf`**: Define os recursos do módulo.
+    - **`variables.tf`**: Define as variáveis usadas pelo módulo.
+    - **`outputs.tf`**: Exibe informações sobre os recursos criados para serem utilizados por outros módulos ou para acompanhamento.  Tem a função de expor valores de recursos criados ou configurados para que você possa utilizá-los em outras partes do código ou até mesmo para visualizar os resultados após a execução do terraform apply.
+- **Estrutura modular** facilita a manutenção e reutilização de código, além de tornar a configuração mais clara e organizada.
+
 ## Melhores Práticas
 
 - Armazene o estado do Terraform de forma segura usando o Azure Storage ou o Terraform Cloud.
