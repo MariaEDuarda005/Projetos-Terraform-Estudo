@@ -18,45 +18,45 @@ provider "azurerm" {
   }
 }
 
-variable "prefix" {
-  default = "maria-terraform"
-}
-
-# Grupo de recursos
-resource "azurerm_resource_group" "rg-tf" {
-  name     = "${var.prefix}-dev"
-  location = "East US"
-}
-
-resource "azurerm_kubernetes_cluster" "aks-tf" {
-  name                = "${var.prefix}-aks1"
-  location            = azurerm_resource_group.rg-tf.location
-  resource_group_name = azurerm_resource_group.rg-tf.name
-  dns_prefix          = "mariaterraformaks1"
-
-  default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_D2_v2"
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
-
+locals {
+  environment_prefix      = "dev"
+  resource_group_name     = "terraform-${local.environment_prefix}"
+  resource_group_location = "East US"
   tags = {
-    Environment = "Production"
+    Project      = "terraform-${local.environment_prefix}" #⚠️#
+    Owner        = "maria_ferreira"                        #⚠️#
+    CreationDate = "21/02/2025"                            #⚠️#
+    Environment  = local.environment_prefix                #⚠️#
   }
-
 }
 
-# está capturando o arquivo de configuração completo do Kubernetes
-output "kube_config" {
-  value = azurerm_kubernetes_cluster.aks-tf.kube_config_raw
-  sensitive = true
+module "azurerg" {
+  source = "./modules/azurerg"
+
+  resource_group_name     = local.resource_group_name # Quando cria um cluster AKS da Azure ele salva assim -> MC_<resource_group_name>_<kubernetes_cluster_name>_<location>
+
+  resource_group_location = local.resource_group_location
+  tags                    = local.tags
 }
 
-/*
-Como Usar os Outputs:
-terraform output <nome_do_output>
-*/
+module "kubernetes" {
+  source = "./modules/kubernetes"
+
+  kubernetes_name         = "terraform-dev-aks1"
+  resource_group_location = local.resource_group_location
+  resource_group_name     = local.resource_group_name
+  kubernetes_dns_prefix   = "mariaterraformaks1"
+
+  name_default_node_pool = "default"
+  node_count             = 1
+  vm_size                = "Standard_D2_v2"
+
+  type = "SystemAssigned"
+
+  tag_environment = "Production"
+}
+
+# output "kube_config" {
+#   value = azurerm_kubernetes_cluster.aks-tf.kube_config_raw
+#   sensitive = true
+# }

@@ -41,7 +41,7 @@ resource "azurerm_subnet" "internal" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.rg-tf.name
   virtual_network_name = azurerm_virtual_network.vn-tf.name # A sub-rede estará dentro da rede criada acima.
-  address_prefixes     = ["10.0.2.0/24"] # O intervalo de IPs da sub-rede.
+  address_prefixes     = ["10.0.2.0/24"]                    # O intervalo de IPs da sub-rede.
 }
 
 # Criando uma interface de rede para a máquina virtual.
@@ -53,7 +53,7 @@ resource "azurerm_network_interface" "main" {
   ip_configuration {
     name                          = "test-configuration-main"
     subnet_id                     = azurerm_subnet.internal.id # A interface de rede estará associada à sub-rede criada.
-    private_ip_address_allocation = "Dynamic" # O IP será alocado de forma dinâmica.
+    private_ip_address_allocation = "Dynamic"                  # O IP será alocado de forma dinâmica.
   }
 
 }

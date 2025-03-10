@@ -26,6 +26,7 @@ Aqui estão os comandos Terraform organizados em uma tabela para facilitar o uso
 | `terraform plan -out plan.out`      | Gera um plano de execução e o salva em `plan.out`. |
 | `terraform apply plan.out`          | Aplica as mudanças planejadas para a infraestrutura no Azure. |
 | `terraform destroy`                 | **Aviso:** Este comando irá remover todos os recursos gerenciados pelo Terraform. |
+| `terraform output <nome_output>` | Exibe o valor do output especificado. |
 
 
 ## Módulos
