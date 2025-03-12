@@ -33,7 +33,7 @@ locals {
 module "azurerg" {
   source = "./modules/azurerg"
 
-  resource_group_name     = local.resource_group_name # Quando cria um cluster AKS da Azure ele salva assim -> MC_<resource_group_name>_<kubernetes_cluster_name>_<location>
+  resource_group_name = local.resource_group_name
 
   resource_group_location = local.resource_group_location
   tags                    = local.tags
@@ -41,15 +41,15 @@ module "azurerg" {
 
 module "grafana" {
   source = "./modules/grafana"
-  
-  grafana_name = "terraform_grafana_observability"
+
+  grafana_name            = "grafana-${local.environment_prefix}-7886" # ⚠️ Unico #
   resource_group_location = local.resource_group_location
   resource_group_name     = local.resource_group_name
-  grafana_version = 10
-  api_key = true
-  grafana_ip_enabled = true
-  public_network = false
-  zone_redundancy = false
+  grafana_version         = 10
+  api_key                 = true
+  grafana_ip_enabled      = true
+  public_network          = true # deixar publico
+  zone_redundancy         = false
 
   identity_type = "SystemAssigned"
 

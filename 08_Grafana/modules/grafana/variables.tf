@@ -11,6 +11,11 @@ variable "resource_group_location" {
 variable "grafana_name" {
   description = "The name of the Grafana dashboard."
   type        = string
+
+  validation {
+    condition     = length(var.grafana_name) >= 2 && length(var.grafana_name) <= 23
+    error_message = "The name must be between 2 and 23 characters."
+  }
 }
 
 variable "grafana_version" {
